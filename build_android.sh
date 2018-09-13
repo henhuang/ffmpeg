@@ -18,6 +18,10 @@ ISYSROOT=$NDK/sysroot
 
 ASM=$ISYSROOT/usr/include/$PLATFORM
 
+# ouput folder
+export PREFIX=$(pwd)/android/arm
+
+
 
 # toolchain，version is 4.9
 
@@ -25,25 +29,34 @@ ASM=$ISYSROOT/usr/include/$PLATFORM
 function build_one
 {
 ./configure \
+    --prefix=$PREFIX \
     --disable-asm \
     --disable-yasm \
     --enable-cross-compile \
-    --disable-shared \
     --enable-static \
+    --disable-shared \
     --disable-doc \
+    --disable-stripping \
+    --disable-debug \
     --disable-ffmpeg \
     --disable-ffplay \
     --disable-ffprobe \
     --disable-avdevice \
-    --disable-ffserver \
-    --disable-doc \
+    --disable-avformat \
+    --disable-postproc \
+    --disable-avfilter \
+    --disable-swscale-alpha \
     --disable-symver \
-    --disable-cli \
+    --disable-network \
+    --disable-mmx \
+    --disable-swresample \
+    --disable-everything \
     --enable-parser=h264 \
     --enable-parser=hevc \
     --enable-decoder=h264 \
     --enable-decoder=hevc \
-    --prefix=$PREFIX \
+    --enable-swscale \
+    --enable-pic \
     --cross-prefix=$TOOLCHAIN/bin/arm-linux-androideabi- \
     --target-os=android \
     --arch=arm \
@@ -54,11 +67,9 @@ function build_one
 
 $ADDITIONAL_CONFIGURE_FLAG
 make clean
-make
+make -j4 # make with 4 threads
 make install
 }
 
-# ouput folder
-CPU=arm
-PREFIX=$(pwd)/android/$CPU
+
 build_one
